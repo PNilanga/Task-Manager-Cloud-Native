@@ -11,8 +11,8 @@ module "vpc" {
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]  # Internal resources (not internet-facing)
   public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]  # Internet-facing resources
 
-  enable_nat_gateway = true   # Lets private subnet resources access the internet
-  single_nat_gateway = true   # Use 1 NAT gateway (cost saving for dev)
+  enable_nat_gateway = false  # Disabled to save ~$32/mo (tasks use public subnets)
+  single_nat_gateway = false
 
   # Tags required for Kubernetes to discover subnets
   public_subnet_tags = {
