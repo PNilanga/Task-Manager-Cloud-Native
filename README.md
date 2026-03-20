@@ -42,9 +42,9 @@ graph LR
 | **CD Pipeline** | GitHub Actions | Automated Docker image publishing to AWS ECR on version tags |
 | **Infrastructure as Code** | Terraform (HCL) | Provisioned VPC, subnets, ECR, ECS cluster, Fargate task definitions, IAM roles, and security groups |
 | **Cloud Platform** | AWS | VPC, ECR, ECS Fargate, IAM — all managed via Terraform |
-| **Networking** | AWS VPC | Public/private subnets across 2 AZs with Kubernetes-ready subnet tagging |
+| **Networking** | AWS VPC | Public/private subnets across 2 AZs, security groups, route tables |
 | **Security** | Helmet.js, Trivy, IAM | CSP headers, vulnerability scanning in CI, least-privilege IAM roles, non-root containers |
-| **Monitoring** | Prometheus metrics | Custom `/metrics` endpoint exposing application metrics in Prometheus format |
+| **Observability** | Prometheus-ready | Custom `/metrics` endpoint exposing application metrics in Prometheus-compatible format |
 
 ---
 
@@ -203,6 +203,19 @@ aws ecs update-service --cluster devops-capstone-cluster \
 - **Non-root containers** — Least-privilege Docker execution
 - **IAM roles** — Scoped permissions for ECS task execution
 - **Security groups** — Network-level access control
+
+---
+
+## 🔮 Future Enhancements
+
+| Enhancement | Skill Demonstrated |
+|---|---|
+| Prometheus + Grafana monitoring stack | Observability, dashboarding, alerting |
+| Kubernetes (EKS) deployment | Container orchestration, auto-scaling |
+| PostgreSQL database (RDS via Terraform) | Stateful workloads, managed services |
+| Blue/green or canary deployments | Advanced deployment strategies |
+| HTTPS with ACM + ALB | TLS, certificate management |
+| ArgoCD for GitOps | Declarative continuous delivery |
 
 ---
 
