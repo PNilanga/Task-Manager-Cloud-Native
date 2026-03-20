@@ -3,43 +3,47 @@ name: CD Pipeline
 on:
   push:
     tags:
-      - 'v*'                     # Only run when you push a version tag
+      - 'v*'
 
 env:
-  DOCKER_IMAGE: praneethnilanga/devops_project
+  # Using the exact URL Terraform just printed out!
+  ECR_REGISTRY: 529088254830.dkr.ecr.us-east-1.amazonaws.com
+  ECR_REPOSITORY: devops-capstone
+  AWS_REGION: us-east-1
 
 jobs:
   publish:
-    name: 📦 Publish Docker Image
+    name: 📦 Publish to AWS ECR
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # Login to Docker Hub using secrets (never hardcode passwords!)
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      # 1. Log in to AWS
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      # Extract version from the git tag
+      # 2. Log in specifically to AWS ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
       - name: Extract version
         id: version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
-      # Build and push with multiple tags
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.VERSION }}
-            ${{ env.DOCKER_IMAGE }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      # 3. Build and Push to AWS
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ env.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ steps.version.outputs.VERSION }}
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker build -t $REGISTRY/$REPOSITORY:latest .
+          docker push -a $REGISTRY/$REPOSITORY
