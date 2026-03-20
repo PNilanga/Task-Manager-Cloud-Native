@@ -6,7 +6,7 @@ on:
       - 'v*'                     # Only run when you push a version tag
 
 env:
-  DOCKER_IMAGE: YOUR_DOCKERHUB_USERNAME/devops-capstone
+  DOCKER_IMAGE: praneethnilanga/devops_project
 
 jobs:
   publish:
