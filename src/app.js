@@ -6,7 +6,17 @@ const morgan = require('morgan');
 const app = express();
 
 // Middleware - these run on EVERY request before your route handlers
-app.use(helmet());       // Security headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:"],
+    },
+  },
+}));
 app.use(cors());         // Allow cross-origin requests
 app.use(morgan('combined')); // Request logging
 app.use(express.json()); // Parse JSON request bodies
